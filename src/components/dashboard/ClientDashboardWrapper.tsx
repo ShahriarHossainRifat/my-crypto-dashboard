@@ -1,8 +1,8 @@
-// src/components/dashboard/ClientDashboardWrapper.tsx (Fixed Unescaped Entities)
+// src/components/dashboard/ClientDashboardWrapper.tsx (Cleaned up Comment)
 // --- Start of File ---
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import useSWR from "swr";
 import useDebounce from "@/hooks/useDebounce";
 // Import types
@@ -27,7 +27,7 @@ import MarketOverview from "./MarketOverview";
 // --- Fetcher Functions ---
 // Fetcher for the main coin list endpoint
 const listFetcher = async (url: string): Promise<CryptoMarketData[]> => {
-  console.log(`[Fetcher] Attempting fetch: ${url}`);
+  // console.log(`[Fetcher] Attempting fetch: ${url}`);
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -57,16 +57,12 @@ interface ClientDashboardWrapperProps {
 const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
   initialData,
 }) => {
-  // console.log('[Wrapper] Render. Initial Data Len:', initialData?.length);
-
   // --- State Definitions ---
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("market_cap_desc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = DEFAULT_PER_PAGE;
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  // console.log(`[Wrapper] State: page=${currentPage}, sort=${sortOption}, search='${searchTerm}' (debounced='${debouncedSearchTerm}')`);
-  // --- End State Definitions ---
 
   // --- API URL Construction (Memoized) ---
   const listApiUrl = useMemo(() => {
@@ -75,44 +71,37 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
       order: sortOption,
       per_page: itemsPerPage.toString(),
       page: currentPage.toString(),
-      sparkline: "false", // Ensure sparkline is false now
-      price_change_percentage: "1h,24h,7d", // Ensure these match CryptoTableRow needs
+      sparkline: "false", // Ensure sparkline is false
+      price_change_percentage: "1h,24h,7d",
       locale: "en",
     });
-    const url =
+    // Use string concatenation as fixed before
+    return (
       COINGECKO_API_BASE_URL +
       COINGECKO_MARKETS_ENDPOINT +
       "?" +
-      params.toString(); // Use concatenation
-    // console.log('[Wrapper] Calculated listApiUrl:', url);
-    return url;
-  }, [currentPage, sortOption, itemsPerPage]); // Dependencies checked
+      params.toString()
+    );
+  }, [currentPage, sortOption, itemsPerPage]);
 
   const globalApiUrl = `${COINGECKO_API_BASE_URL}/global`;
-  // --- End API URL Construction ---
 
   // --- SWR Hooks ---
-  const swrListKey = listApiUrl; // Use consistent key
+  const swrListKey = listApiUrl;
+  // Removed unused 'isValidatingMarketData'
   const {
     data: marketData,
     error: marketError,
     isLoading: isLoadingMarketData,
-    isValidating: isValidatingMarketData,
   } = useSWR<CryptoMarketData[]>(swrListKey, listFetcher, {
-    refreshInterval: 300000, // Increased interval
-    // keepPreviousData: false, // Keep disabled for debugging sorting/paging
+    refreshInterval: 300000, // Keep interval high to avoid rate limits
     fallbackData:
       currentPage === 1 &&
       sortOption === "market_cap_desc" &&
       !debouncedSearchTerm
         ? initialData
         : undefined,
-    // shouldRetryOnError: false, // Optional: disable retry for debugging
   });
-  // Log SWR list state updates (optional debug)
-  // useEffect(() => {
-  //      console.log(`[Wrapper] SWR List State Update: Key=${swrListKey}, isLoading=${isLoadingMarketData}, isValidating=${isValidatingMarketData}, dataLen=${marketData?.length}, error=${marketError}`);
-  // }, [swrListKey, isLoadingMarketData, isValidatingMarketData, marketData, marketError]);
 
   const {
     data: globalData,
@@ -121,73 +110,55 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
   } = useSWR<GlobalMarketData>(
     globalApiUrl,
     globalDataFetcher,
-    { refreshInterval: 300000 } // Increased interval
+    { refreshInterval: 300000 } // Keep interval high
   );
   // --- End SWR Hooks ---
 
-  // --- Data Handling & Filtering (Memoized) ---
-  const currentData = marketData ?? initialData ?? []; // Default to empty array
-  // Explicitly typed useMemo hook for filtered data
+  // --- Data Handling & Filtering ---
+  // Memoize currentData calculation
+  const currentData = useMemo(
+    () => marketData ?? initialData ?? [],
+    [marketData, initialData]
+  );
+
+  // Memoized calculation for filteredData
   const filteredData = useMemo((): CryptoMarketData[] => {
-    if (!debouncedSearchTerm) {
-      return currentData; // Return current dataset if no search term
-    }
-    // Filter based on search term
+    if (!debouncedSearchTerm) return currentData;
     return currentData.filter(
       (coin) =>
         coin.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
         coin.symbol.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
-  }, [currentData, debouncedSearchTerm]); // Dependencies: currentData, debouncedSearchTerm
+    // Ensure no stray comment is here
+  }, [currentData, debouncedSearchTerm]); // Dependencies are correct
   // --- End Data Handling & Filtering ---
 
-  // --- Loading State Calculation ---
-  // Show loading if SWR is fetching and we don't have fallback/previous data for the current view
+  // --- Loading State & Pagination Logic ---
   const displayLoadingTable =
     isLoadingMarketData && !marketData && !initialData?.length;
-  // console.log(`[Wrapper] displayLoadingTable=${displayLoadingTable}`);
-  // --- End Loading State Calculation ---
-
-  // --- Pagination Logic ---
   const hasMoreData = currentData && currentData.length === itemsPerPage;
-  const nextPagePossiblyExists = !isLoadingMarketData && hasMoreData;
-  const estimatedTotalPages = nextPagePossiblyExists
-    ? currentPage + 1
-    : currentPage;
-  // console.log(`[Wrapper] Pagination: hasMore=${hasMoreData}, estimatedPages=${estimatedTotalPages}`);
-  // --- End Pagination Logic ---
+  const estimatedTotalPages = hasMoreData ? currentPage + 1 : currentPage;
 
   // --- Event Handlers (Using useCallback) ---
   const handleSearchChange = useCallback((term: string) => {
-    // console.log('[Wrapper] handleSearchChange:', term);
     setSearchTerm(term);
     setCurrentPage(1);
   }, []);
-
   const handleSortChange = useCallback((option: string) => {
-    console.log("[Wrapper] handleSortChange:", option); // Important log
     setSortOption(option);
     setCurrentPage(1);
   }, []);
-
   const handlePageChange = useCallback((page: number) => {
-    console.log("[Wrapper] handlePageChange:", page); // Important log
     setCurrentPage(page);
-    // Optional: Scroll to top
-    // window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
-  // --- End Event Handlers ---
 
   // --- Render Logic ---
   return (
     <div className="w-full">
-      {/* Market Overview */}
       <MarketOverview
         globalData={globalData}
         isLoading={isLoadingGlobalData && !globalData}
       />
-
-      {/* Filters */}
       <Filters
         searchTerm={searchTerm}
         sortOption={sortOption}
@@ -212,13 +183,12 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
 
       {/* Crypto Table */}
       <CryptoTable
-        data={filteredData} // Use the memoized filtered data
-        isLoading={displayLoadingTable} // Use calculated loading state
+        data={filteredData}
+        isLoading={displayLoadingTable}
         itemsPerPage={itemsPerPage}
       />
 
       {/* Pagination */}
-      {/* Render pagination only if no list error, not loading, and more than one potential page */}
       {!marketError && !displayLoadingTable && estimatedTotalPages > 1 && (
         <Pagination
           currentPage={currentPage}
@@ -227,7 +197,7 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
         />
       )}
 
-      {/* No Search Results Message - Escaped Quotes */}
+      {/* No Search Results Message */}
       {!displayLoadingTable &&
         debouncedSearchTerm &&
         filteredData?.length === 0 && (

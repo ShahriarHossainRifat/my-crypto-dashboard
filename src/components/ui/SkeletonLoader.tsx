@@ -1,11 +1,12 @@
-// src/components/ui/SkeletonLoader.tsx (Updated Styling)
+// src/components/ui/SkeletonLoader.tsx (Fixed Empty Interface)
 // --- Start of File ---
 import React from "react";
 
-interface SkeletonLoaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  // No specific props needed for this basic version,
-  // but accepts standard div attributes like className.
-}
+// Extend React's HTML attributes for a div element
+export interface SkeletonLoaderProps
+  extends React.HTMLAttributes<HTMLDivElement> {}
+// No specific custom props needed for this basic version,
+// but allows standard props like className, style, id etc.
 
 const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   className,
@@ -14,13 +15,13 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   return (
     <div
       className={`
-        animate-pulse // Use standard pulse
+        animate-pulse
         rounded-md
         bg-muted // Use the muted background color from theme
-        dark:opacity-80 // Slightly less opaque in dark mode if needed
+        dark:opacity-80
         ${className} // Allow overriding/extending styles
       `}
-      {...props}
+      {...props} // Spread other standard div attributes
     />
   );
 };

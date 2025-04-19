@@ -1,4 +1,4 @@
-// src/lib/apiClient.ts (Set sparkline back to false)
+// src/lib/apiClient.ts (Removed unused catch variables)
 // --- Start of File ---
 import {
   COINGECKO_API_BASE_URL,
@@ -6,11 +6,9 @@ import {
   DEFAULT_VS_CURRENCY,
   DEFAULT_PER_PAGE,
 } from "./constants";
-// Import types - CryptoMarketData type will be updated in the next step
 import type { CryptoMarketData } from "@/types/crypto";
 import type { GlobalMarketData } from "@/types/global";
 
-// --- fetchMarketData function (Updated params) ---
 export async function fetchMarketData(
   vs_currency: string = DEFAULT_VS_CURRENCY,
   page: number = 1,
@@ -22,36 +20,27 @@ export async function fetchMarketData(
     order: order,
     per_page: per_page.toString(),
     page: page.toString(),
-    // --- Set sparkline back to false ---
-    sparkline: "false", // Do not request sparkline data
-    // --- End change ---
-    price_change_percentage: "1h,24h,7d", // Still request these percentages
+    sparkline: "false",
+    price_change_percentage: "1h,24h,7d",
     locale: "en",
   });
   const paramsStr = params.toString();
-
-  // Use string concatenation (as fixed before)
   const url =
     COINGECKO_API_BASE_URL + COINGECKO_MARKETS_ENDPOINT + "?" + paramsStr;
-  // console.log(">>> SERVER LOG: Attempting URL:", url);
-
   const headers = {};
-  try {
-    const response = await fetch(url, {
-      method: "GET",
-      headers: headers,
-      // cache: 'force-cache', // Or other cache options
-    });
 
+  try {
+    const response = await fetch(url, { method: "GET", headers: headers });
     if (!response.ok) {
       let errorDetails = `HTTP error! status: ${response.status}`;
+      // Remove variable 'e' if not used
       try {
         const errorData = await response.json();
         errorDetails += `, message: ${
           errorData?.error || JSON.stringify(errorData)
         }`;
-      } catch (e) {
-        /* Ignore */
+      } catch {
+        /* Ignore JSON parsing error - no variable needed */
       }
       throw new Error(`Failed to fetch market data: ${errorDetails}`);
     }
@@ -62,9 +51,7 @@ export async function fetchMarketData(
     throw error;
   }
 }
-// --- End of fetchMarketData function ---
 
-// --- fetchGlobalData function (remains the same) ---
 export async function fetchGlobalData(): Promise<GlobalMarketData> {
   const url = `${COINGECKO_API_BASE_URL}/global`;
   const headers = {};
@@ -72,13 +59,14 @@ export async function fetchGlobalData(): Promise<GlobalMarketData> {
     const response = await fetch(url, { method: "GET", headers: headers });
     if (!response.ok) {
       let errorDetails = `HTTP error! status: ${response.status}`;
+      // Remove variable 'e' if not used
       try {
         const errorData = await response.json();
         errorDetails += `, message: ${
           errorData?.status?.error_message || JSON.stringify(errorData)
         }`;
-      } catch (e) {
-        /* Ignore */
+      } catch {
+        /* Ignore JSON parsing error - no variable needed */
       }
       throw new Error(`Failed to fetch global market data: ${errorDetails}`);
     }
@@ -92,6 +80,4 @@ export async function fetchGlobalData(): Promise<GlobalMarketData> {
     throw error;
   }
 }
-// --- End of fetchGlobalData function ---
-
 // --- End of File ---

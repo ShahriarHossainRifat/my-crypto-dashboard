@@ -1,20 +1,15 @@
-// src/components/ui/Card.tsx (Updated Styling)
+// src/components/ui/Card.tsx (Fixed Empty Interfaces)
 // --- Start of File ---
 import React from "react";
-import type { ChildrenProps } from "@/types";
+// No longer need ChildrenProps from types if we extend HTMLAttributes
 
-// Define specific props for the Card, extending basic children props if needed
-interface CardProps extends ChildrenProps {
-  className?: string; // Allow passing additional CSS classes
-  // Add other potential props like 'onClick', etc.
-  onClick?: () => void;
-  // Add standard HTML attributes for accessibility or other needs
-  // Extend React.HTMLAttributes<HTMLDivElement> if needed
+// Main Card Props (Accepts standard div attributes)
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  // Add any Card-specific custom props here if needed in the future
+  // className is included in HTMLAttributes
 }
 
 const Card: React.FC<CardProps> = ({ children, className = "", ...props }) => {
-  // Use HSL variables defined in globals.css via tailwind.config.ts
-  // Added subtle transition for hover effects if any are added later
   return (
     <div
       className={`
@@ -22,25 +17,23 @@ const Card: React.FC<CardProps> = ({ children, className = "", ...props }) => {
         transition-colors duration-150 ease-in-out
         ${className}
       `}
-      {...props} // Spread remaining props like onClick
+      {...props} // Spread remaining props like onClick, style, id etc.
     >
       {children}
     </div>
   );
 };
 
-// --- Optional Card Sub-components (Updated Styling) ---
+// --- Sub-components with Fixed Interfaces ---
 
-// Type for sub-components that accept standard HTML attributes
-interface CardElementProps extends React.HTMLAttributes<HTMLDivElement> {}
-interface CardHeaderProps extends CardElementProps {}
-interface CardContentProps extends CardElementProps {}
-interface CardFooterProps extends CardElementProps {}
+// Extend corresponding HTMLAttributes for type safety & standard props
+interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
 interface CardDescriptionProps
   extends React.HTMLAttributes<HTMLParagraphElement> {}
 
-// Export sub-components if you plan to use them for structure within Cards
 export const CardHeader: React.FC<CardHeaderProps> = ({
   className = "",
   children,
@@ -82,7 +75,6 @@ export const CardContent: React.FC<CardContentProps> = ({
   children,
   ...props
 }) => (
-  // Adjusted padding to be consistent if header/footer have padding
   <div className={`p-4 pt-0 md:p-6 md:pt-0 ${className}`} {...props}>
     {children}
   </div>
@@ -101,6 +93,5 @@ export const CardFooter: React.FC<CardFooterProps> = ({
   </div>
 );
 
-// Default export remains the main Card container
 export default Card;
 // --- End of File ---

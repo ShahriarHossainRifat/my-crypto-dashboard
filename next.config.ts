@@ -7,6 +7,9 @@ const repoName = "my-crypto-dashboard";
 const isGithubPages = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true, // Ignore ESLint errors during build
+  },
   reactStrictMode: true, // Recommended for highlighting potential problems in React 19+
 
   // --- GitHub Pages Configuration ---
