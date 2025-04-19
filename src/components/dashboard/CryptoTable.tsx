@@ -1,130 +1,153 @@
-// src/components/dashboard/CryptoTable.tsx
-
-"use client"; // This component is a client component
-
+// src/components/dashboard/CryptoTable.tsx (Sparkline Header/Skeleton Removed)
+// --- Start of File ---
 import React from "react";
 import type { CryptoMarketData } from "@/types/crypto";
 import CryptoTableRow from "./CryptoTableRow";
-import SkeletonLoader from "@/components/ui/SkeletonLoader"; // For loading state
+import SkeletonLoader from "@/components/ui/SkeletonLoader";
+import { DEFAULT_PER_PAGE } from "@/lib/constants";
 
 interface CryptoTableProps {
-  data: CryptoMarketData[] | undefined; // Array of coin data
+  data: CryptoMarketData[] | undefined;
   isLoading?: boolean;
-  itemsPerPage?: number; // Used for skeleton loading rows
+  itemsPerPage?: number;
 }
 
 const CryptoTable: React.FC<CryptoTableProps> = ({
   data,
   isLoading = false,
-  itemsPerPage = 10, // Default skeleton rows if data is undefined
+  itemsPerPage = DEFAULT_PER_PAGE,
 }) => {
   const skeletonRowCount = itemsPerPage;
 
-  // Define headers - adjust based on columns in CryptoTableRow
+  // Define headers *without* the sparkline column
   const headers = [
-    { key: "rank", label: "#", className: "p-3 text-center w-12" },
-    { key: "name", label: "Name", className: "p-3 text-left" },
-    { key: "price", label: "Price", className: "p-3 text-right" },
+    {
+      key: "rank",
+      label: "#",
+      className:
+        "px-2 py-3 text-center text-xs font-medium text-muted-foreground uppercase tracking-wider w-12",
+    },
+    {
+      key: "name",
+      label: "Name",
+      className:
+        "px-3 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider",
+    },
+    {
+      key: "price",
+      label: "Price",
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider",
+    },
     {
       key: "1h",
       label: "1h %",
-      className: "p-3 text-right hidden lg:table-cell",
-    }, // Optional column
-    { key: "24h", label: "24h %", className: "p-3 text-right" },
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell",
+    },
+    {
+      key: "24h",
+      label: "24h %",
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider",
+    },
     {
       key: "7d",
       label: "7d %",
-      className: "p-3 text-right hidden lg:table-cell",
-    }, // Optional column
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell",
+    },
     {
       key: "market_cap",
       label: "Market Cap",
-      className: "p-3 text-right hidden md:table-cell",
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell",
     },
     {
       key: "volume_24h",
       label: "Volume (24h)",
-      className: "p-3 text-right hidden md:table-cell",
+      className:
+        "px-3 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell",
     },
-    // { key: 'sparkline', label: 'Last 7 Days', className: 'p-3 text-right hidden xl:table-cell' }, // Optional
+    // --- SPARKLINE HEADER REMOVED ---
   ];
 
+  // Calculate ColSpan based on the updated number of headers
+  const headerColSpan = headers.length;
+
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-[var(--border)]">
-      <table className="w-full text-sm">
-        <thead className="bg-gray-100 dark:bg-gray-800/50">
-          <tr>
-            {headers.map((header) => (
-              <th
-                key={header.key}
-                scope="col"
-                className={`font-medium text-gray-500 dark:text-gray-400 ${header.className}`}
-              >
-                {header.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {isLoading &&
-            // Render Skeleton Rows during loading
-            Array.from({ length: skeletonRowCount }).map((_, index) => (
-              <tr
-                key={`skeleton-${index}`}
-                className="border-b border-[var(--border)]"
-              >
-                {/* Match skeleton cells to header columns */}
-                <td className="p-3 text-center">
-                  <SkeletonLoader className="h-4 w-6 mx-auto" />
-                </td>
-                <td className="p-3">
-                  <SkeletonLoader className="h-4 w-3/4" />
-                </td>
-                <td className="p-3">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                <td className="p-3 hidden lg:table-cell">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                <td className="p-3">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                <td className="p-3 hidden lg:table-cell">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                <td className="p-3 hidden md:table-cell">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                <td className="p-3 hidden md:table-cell">
-                  <SkeletonLoader className="h-4 w-full ml-auto" />
-                </td>
-                {/* Optional: Skeleton for sparkline */}
-                {/* <td className="p-3 hidden xl:table-cell"><SkeletonLoader className="h-10 w-full" /></td> */}
-              </tr>
-            ))}
-
-          {!isLoading &&
-            data &&
-            data.length > 0 &&
-            data.map((coin, index) => (
-              // Use coin.id for a stable key
-              <CryptoTableRow key={coin.id} coin={coin} index={index} />
-            ))}
-
-          {!isLoading && (!data || data.length === 0) && (
+    <div className="w-full overflow-hidden rounded-lg border border-border shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-border">
+          <thead className="bg-muted/50 dark:bg-muted/30">
             <tr>
-              <td
-                colSpan={headers.length}
-                className="text-center p-6 text-gray-500 dark:text-gray-400"
-              >
-                No data available.
-              </td>
+              {headers.map((header) => (
+                <th key={header.key} scope="col" className={header.className}>
+                  {header.label}
+                </th>
+              ))}
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-border bg-card">
+            {isLoading &&
+              Array.from({ length: skeletonRowCount }).map((_, index) => (
+                <tr
+                  key={`skeleton-${index}`}
+                  className="border-b border-border animate-pulse"
+                >
+                  {/* Skeleton cells matching the remaining headers */}
+                  <td className="px-2 py-3 text-center">
+                    <SkeletonLoader className="h-4 w-6 mx-auto" />
+                  </td>
+                  <td className="px-3 py-3">
+                    <SkeletonLoader className="h-4 w-3/4" />
+                  </td>
+                  <td className="px-3 py-3">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  <td className="px-3 py-3 hidden lg:table-cell">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  <td className="px-3 py-3">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  <td className="px-3 py-3 hidden lg:table-cell">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  <td className="px-3 py-3 hidden md:table-cell">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  <td className="px-3 py-3 hidden md:table-cell">
+                    <SkeletonLoader className="h-4 w-full ml-auto" />
+                  </td>
+                  {/* --- SPARKLINE SKELETON REMOVED --- */}
+                </tr>
+              ))}
+
+            {!isLoading &&
+              data &&
+              data.length > 0 &&
+              data.map((coin, index) => (
+                <CryptoTableRow key={coin.id} coin={coin} index={index} />
+              ))}
+
+            {!isLoading && (!data || data.length === 0) && (
+              <tr>
+                {/* Updated ColSpan */}
+                <td
+                  colSpan={headerColSpan}
+                  className="text-center p-6 text-muted-foreground"
+                >
+                  No data available.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
 export default CryptoTable;
+// --- End of File ---

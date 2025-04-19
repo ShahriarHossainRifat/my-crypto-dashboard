@@ -1,69 +1,83 @@
-// src/components/dashboard/MarketOverview.tsx
+// src/components/dashboard/MarketOverview.tsx (Updated Styling)
+// --- Start of File ---
 import React from "react";
 import StatCard from "./StatCard";
-// Define a type for the global market data we expect
-// This might come from a different API endpoint (e.g., CoinGecko's /global)
-export interface GlobalMarketData {
-  total_market_cap: { usd: number };
-  total_volume: { usd: number };
-  market_cap_percentage: { btc: number; eth: number }; // BTC dominance, ETH dominance
-  market_cap_change_percentage_24h_usd: number | null;
-  // Add other fields as needed from the API response
-}
+import type { GlobalMarketData } from "@/types/global"; // Use the specific type
+import { DEFAULT_VS_CURRENCY } from "@/lib/constants"; // Use for accessing nested data
+// Optional icons for cards
+import {
+  FaEarthAmericas,
+  FaDollarSign,
+  FaChartPie,
+  FaPercent,
+} from "react-icons/fa6";
 
 interface MarketOverviewProps {
-  globalData: GlobalMarketData | null; // Data can be null initially or on error
+  globalData: GlobalMarketData | null | undefined; // Accept undefined from SWR
   isLoading?: boolean;
 }
 
-// This component likely doesn't need to be a client component
-// if it just receives data as props.
 const MarketOverview: React.FC<MarketOverviewProps> = ({
   globalData,
   isLoading = false,
 }) => {
-  // Example data points to display
-  const marketCap = globalData?.total_market_cap?.usd;
-  const volume24h = globalData?.total_volume?.usd;
+  const currencyKey = DEFAULT_VS_CURRENCY.toLowerCase();
+
+  // Safely access nested data
+  const marketCap = globalData?.total_market_cap?.[currencyKey];
+  const volume24h = globalData?.total_volume?.[currencyKey];
   const marketCapChange24h = globalData?.market_cap_change_percentage_24h_usd;
-  const btcDominance = globalData?.market_cap_percentage?.btc;
-  // const ethDominance = globalData?.market_cap_percentage?.eth; // Example
+  const btcDominance = globalData?.market_cap_percentage?.["btc"];
+  const activeCoins = globalData?.active_cryptocurrencies;
 
   return (
-    <div className="mb-6">
-      <h2 className="text-xl font-semibold mb-4">Market Overview</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    // Add consistent bottom margin
+    <div className="mb-8">
+      {/* Slightly larger, bolder title */}
+      <h2 className="text-xl font-semibold mb-4 text-foreground">
+        Market Overview
+      </h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Market Cap"
           value={marketCap}
           changePercentage={marketCapChange24h}
-          formatType="compact" // Use compact formatting for large numbers
+          formatType="compact"
+          currency={currencyKey}
           isLoading={isLoading}
+          icon={<FaDollarSign />} // Example icon
+          tooltip="Total market capitalization of all cryptocurrencies."
         />
         <StatCard
           title="24h Volume"
           value={volume24h}
           formatType="compact"
+          currency={currencyKey}
           isLoading={isLoading}
-          // No change percentage provided in this example data structure for volume
+          icon={<FaEarthAmericas />} // Example icon
+          tooltip="Total crypto trading volume in the last 24 hours."
         />
         <StatCard
           title="BTC Dominance"
           value={btcDominance}
-          formatType="number" // Format as a simple number
+          formatType="number" // Let StatCard handle adding '%'
           isLoading={isLoading}
-          // Custom formatting might be needed to add '%' sign without multiplication
-          // Or adjust formatPercentage util if needed
+          icon={<FaChartPie />} // Example icon
+          tooltip="Bitcoin's market cap share compared to the total crypto market cap."
         />
-        {/* Add more StatCards as needed, e.g., for ETH Dominance, Gas fees etc. */}
         <StatCard
-          title="Placeholder Stat" // Example placeholder
-          value={null}
+          title="Active Coins"
+          value={activeCoins} // Pass the number directly
+          formatType="number" // Format as a plain number
           isLoading={isLoading}
+          icon={<FaPercent />} // Example icon - choose appropriate ones
+          tooltip="Number of active cryptocurrencies listed."
         />
+        {/* Add more StatCards if desired */}
       </div>
     </div>
   );
 };
 
 export default MarketOverview;
+// --- End of File ---

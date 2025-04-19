@@ -1,4 +1,4 @@
-// src/components/dashboard/Filters.tsx
+// src/components/dashboard/Filters.tsx (Verify)
 // --- Start of File ---
 "use client";
 
@@ -19,53 +19,44 @@ const Filters: React.FC<FiltersProps> = ({
   onSearchChange,
   onSortChange,
 }) => {
-  // Handler for the search input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearchChange(event.target.value);
   };
 
-  // Handler for the sort select change
+  // Ensure this handler calls the prop function correctly
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    // Ensure the callback passed from the parent is called with the new value
-    onSortChange(event.target.value);
+    onSortChange(event.target.value); // Pass the selected value to the parent handler
   };
 
   return (
-    <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center">
-      {/* Search Input */}
-      <div className="flex-grow w-full sm:w-auto">
+    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="w-full sm:w-auto sm:max-w-xs lg:max-w-sm">
         <Input
           type="text"
-          placeholder="Search coins..."
+          placeholder="Search coins (e.g., Bitcoin, BTC)..."
           value={searchTerm}
-          onChange={handleInputChange} // Uses the input handler
+          onChange={handleInputChange}
           aria-label="Search coins"
+          className="h-9"
         />
       </div>
-
-      {/* Sort Select */}
-      <div className="w-full sm:w-auto">
+      <div className="w-full sm:w-auto sm:min-w-[180px]">
         <Select
-          value={sortOption} // Controlled component: value comes from parent state
-          onChange={handleSortChange} // Uses the select handler
+          value={sortOption} // Controlled by parent state
+          onChange={handleSortChange} // Trigger parent handler on change
           aria-label="Sort by"
+          className="h-9"
         >
-          {/* Ensure values match expected API parameters */}
-          <option value="market_cap_desc">Market Cap Desc</option>
-          <option value="market_cap_asc">Market Cap Asc</option>
-          <option value="volume_desc">Volume Desc</option>
-          <option value="volume_asc">Volume Asc</option>
-          {/* Note: CoinGecko /markets 'order' param might not support sorting directly by % change */}
-          {/* Sorting by change might require client-side logic after fetching */}
-          {/* <option value="price_change_percentage_24h_desc">24h Change Desc</option> */}
-          {/* <option value="price_change_percentage_24h_asc">24h Change Asc</option> */}
-          <option value="id_asc">Name Asc (A-Z)</option>
-          <option value="id_desc">Name Desc (Z-A)</option>
+          <option value="market_cap_desc">Sort by Market Cap (High-Low)</option>
+          <option value="market_cap_asc">Sort by Market Cap (Low-High)</option>
+          <option value="volume_desc">Sort by Volume (High-Low)</option>
+          <option value="volume_asc">Sort by Volume (Low-High)</option>
+          <option value="id_asc">Sort by Name (A-Z)</option>
+          <option value="id_desc">Sort by Name (Z-A)</option>
         </Select>
       </div>
     </div>
   );
 };
-
 export default Filters;
 // --- End of File ---

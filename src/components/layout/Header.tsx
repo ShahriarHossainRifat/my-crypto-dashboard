@@ -13,7 +13,7 @@ const Header: React.FC = () => {
           <Link href="/" className="mr-6 flex items-center space-x-2">
             {/* You can replace text with an SVG logo component later */}
             {/* <YourLogoSvg className="h-6 w-6" /> */}
-            <span className="font-bold sm:inline-block">CryptoDash</span>
+            <span className="font-bold sm:inline-block">MyCryptoDashboard</span>
           </Link>
           {/* Optional: Add main navigation links here if needed */}
           {/* <nav className="flex items-center gap-6 text-sm">

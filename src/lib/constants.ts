@@ -11,7 +11,7 @@ export const COINGECKO_MARKETS_ENDPOINT = "/coins/markets";
 export const DEFAULT_VS_CURRENCY = "usd";
 
 // Default number of coins per page for API requests
-export const DEFAULT_PER_PAGE = 50;
+export const DEFAULT_PER_PAGE = 30;
 
 // Add other constants as needed, e.g.:
 // export const WEBSITE_NAME = 'Crypto Dashboard';

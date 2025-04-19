@@ -1,4 +1,5 @@
-// src/components/ui/SkeletonLoader.tsx
+// src/components/ui/SkeletonLoader.tsx (Updated Styling)
+// --- Start of File ---
 import React from "react";
 
 interface SkeletonLoaderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -13,9 +14,10 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   return (
     <div
       className={`
-        animate-pulse // Use Tailwind's pulse animation
+        animate-pulse // Use standard pulse
         rounded-md
-        bg-gray-300 dark:bg-gray-700 // Placeholder background color
+        bg-muted // Use the muted background color from theme
+        dark:opacity-80 // Slightly less opaque in dark mode if needed
         ${className} // Allow overriding/extending styles
       `}
       {...props}
@@ -24,3 +26,4 @@ const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
 };
 
 export default SkeletonLoader;
+// --- End of File ---

@@ -1,7 +1,5 @@
 // src/types/crypto.ts
-
-// Based on the CoinGecko API '/coins/markets' endpoint response structure
-// Ref: https://docs.coingecko.com/reference/coins-markets
+// --- Start of File ---
 
 export interface CryptoMarketData {
   id: string; // e.g., "bitcoin"
@@ -31,18 +29,15 @@ export interface CryptoMarketData {
   roi: RoiData | null; // Return on Investment data (if available)
   last_updated: string | null; // Last updated timestamp (ISO 8601 format)
 
-  // Optional: Price change percentage for different timeframes (add if needed)
+  // Optional: Price change percentage for different timeframes
   price_change_percentage_1h_in_currency?: number | null;
   price_change_percentage_7d_in_currency?: number | null;
-  // price_change_percentage_14d_in_currency?: number | null;
-  // price_change_percentage_30d_in_currency?: number | null;
-  // price_change_percentage_200d_in_currency?: number | null;
-  // price_change_percentage_1y_in_currency?: number | null;
 
-  // Optional: Sparkline data (add if fetching sparkline=true)
-  // sparkline_in_7d?: {
-  //   price: number[];
-  // };
+  // --- ADDED FIELD for Sparklines ---
+  sparkline_in_7d?: {
+    price: number[]; // Array of price points for the last 7 days
+  };
+  // --- END OF ADDED FIELD ---
 }
 
 export interface RoiData {
@@ -60,3 +55,4 @@ export interface CryptoBasicInfo {
   current_price: number | null;
   price_change_percentage_24h: number | null;
 }
+// --- End of File ---

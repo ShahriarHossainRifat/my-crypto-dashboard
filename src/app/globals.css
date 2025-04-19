@@ -1,58 +1,78 @@
-/* src/app/globals.css */
-@import "tailwindcss"; /* Import Tailwind v4 */
+/* src/app/globals.css (Re-verified) */
+@import "tailwindcss"; /* Tailwind v4 import */
 
-/* Define base CSS variables for theming */
 @layer base {
+  /* Define CSS Variables (using HSL format) */
   :root {
-    --color-primary-light: #6366f1; /* Indigo 500 */
-    --color-primary-default: #4f46e5; /* Indigo 600 */
-    --color-primary-dark: #4338ca;  /* Indigo 700 */
-    --color-secondary: #db2777;   /* Pink 600 */
-
-    --background: 240 10% 3.9%; /* Example for dark mode background */
-    --foreground: 0 0% 98%; /* Example for dark mode foreground */
-
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-
-    /* Define other variables: borders, inputs, rings etc. */
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-
-    --radius: 0.5rem; /* Example border radius variable */
+    /* Theme: Dark (Default) */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%; /* Focus ring */
+    --radius: 0.5rem;
+    --positive: 142.1 70.6% 45.1%; /* Green */
+    --negative: 0 72.2% 50.6%;   /* Red */
   }
 
-  /* Define variables for light mode */
-  /* Using a class applied by next-themes */
   .light {
-    --color-primary-light: #4f46e5;
-    --color-primary-default: #4338ca;
-    --color-primary-dark: #3730a3;
-    --color-secondary: #db2777;
-
-    --background: 0 0% 100%; /* Example for light mode background */
-    --foreground: 240 10% 3.9%; /* Example for light mode foreground */
-
+    /* Theme: Light */
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5.9% 10%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%; /* Focus ring */
+    --radius: 0.5rem;
+    --positive: 142.1 76.2% 36.3%; /* Green */
+    --negative: 0 84.2% 60.2%;   /* Red */
   }
 
-   /* Apply base body styles using CSS variables */
+  /* Apply base body styles */
   body {
-      /* Tailwind v4 applies background/color automatically based on light/dark */
-      /* but you can override or add transitions here */
-      @apply transition-colors duration-300 antialiased;
-        background-color: var(--background);
-        color: var(--foreground);
+    /* Apply colors directly using CSS variables */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    /* Apply other styles via @apply */
+    @apply antialiased font-sans transition-colors duration-300;
   }
 
-  /* Optional: Custom scrollbar */
-   ::-webkit-scrollbar {
+  /* Apply focus ring styling globally using CSS variables */
+  * {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    /* Apply ring color and offset color using CSS variables directly */
+    @apply focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-[hsl(var(--background))];
+  }
+
+  /* Custom scrollbar using theme variables */
+  ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
@@ -60,18 +80,28 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background-color: var(--border); /* Use a theme variable */
+    background-color: hsl(var(--border));
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb:hover {
-     background-color: var(--ring); /* Use a theme variable */
+     background-color: hsl(var(--muted-foreground));
   }
 }
 
-/* Define custom component styles if needed */
+/* Optional: Define base component styles here */
 @layer components {
-   .btn-primary {
-    /* Use the CSS variables directly */
-   @apply px-4 py-2 bg-[var(--color-primary-default)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-md shadow transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--background)] focus:ring-[var(--color-primary-light)]; /* <-- Updated this line */
- }
+  /* Ensure btn-primary uses variables correctly */
+  .btn-primary {
+    /* Use CSS Variables directly for colors */
+    @apply px-4 py-2 font-semibold rounded-md shadow-sm transition-opacity duration-150 ease-in-out;
+    @apply bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:opacity-90;
+    /* Focus state uses the global '*' styles */
+  }
+
+  /* --- CHECK HERE --- */
+  /* Are there any OTHER rules in your file using @apply bg-primary? */
+  /* Or text-primary, border-primary, ring-primary, etc.? */
+  /* If so, they must also be changed to use CSS variables like above */
+  /* Example: .some-other-component { @apply bg-primary; } -> Needs change! */
+
 }
