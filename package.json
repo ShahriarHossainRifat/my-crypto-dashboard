@@ -2,11 +2,14 @@
   "name": "my-crypto-dashboard",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://shahriarhossainrifat.github.io/my-crypto-dashboard",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "predeploy": "npm run build",
+    "deploy": "touch out/.nojekyll && gh-pages -d out -t true"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
@@ -28,6 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
+    "gh-pages": "^6.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

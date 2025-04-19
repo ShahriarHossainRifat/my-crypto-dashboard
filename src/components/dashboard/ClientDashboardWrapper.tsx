@@ -1,4 +1,4 @@
-// src/components/dashboard/ClientDashboardWrapper.tsx (Re-verified with Debugging)
+// src/components/dashboard/ClientDashboardWrapper.tsx (Fixed Unescaped Entities)
 // --- Start of File ---
 "use client";
 
@@ -25,29 +25,27 @@ import Pagination from "./Pagination";
 import MarketOverview from "./MarketOverview";
 
 // --- Fetcher Functions ---
-// Updated listFetcher with better error logging
+// Fetcher for the main coin list endpoint
 const listFetcher = async (url: string): Promise<CryptoMarketData[]> => {
   console.log(`[Fetcher] Attempting fetch: ${url}`);
   try {
     const res = await fetch(url);
     if (!res.ok) {
-      // Log status and potentially response text for more details
       const errorText = await res
         .text()
         .catch(() => "Could not read error response body");
       console.error(
         `[Fetcher] API Error: Status ${res.status}, Response: ${errorText}`
       );
-      throw new Error(`API request failed: ${res.status} ${res.statusText}`); // Include status in error
+      throw new Error(`API request failed: ${res.status} ${res.statusText}`);
     }
     return res.json();
   } catch (error) {
-    // Catch network errors or errors thrown above
     console.error("[Fetcher] Fetch execution error:", error);
-    throw error; // Re-throw the error for SWR to catch
+    throw error;
   }
 };
-// Use dedicated function which includes its own try/catch
+// Fetcher specifically for global data (using the dedicated function)
 const globalDataFetcher = async (): Promise<GlobalMarketData> =>
   fetchGlobalData();
 // --- End Fetcher Functions ---
@@ -77,11 +75,15 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
       order: sortOption,
       per_page: itemsPerPage.toString(),
       page: currentPage.toString(),
-      sparkline: "false", // Keep false until sparklines are added
-      price_change_percentage: "1h,24h,7d",
+      sparkline: "false", // Ensure sparkline is false now
+      price_change_percentage: "1h,24h,7d", // Ensure these match CryptoTableRow needs
       locale: "en",
     });
-    const url = `${COINGECKO_API_BASE_URL}${COINGECKO_MARKETS_ENDPOINT}?${params.toString()}`;
+    const url =
+      COINGECKO_API_BASE_URL +
+      COINGECKO_MARKETS_ENDPOINT +
+      "?" +
+      params.toString(); // Use concatenation
     // console.log('[Wrapper] Calculated listApiUrl:', url);
     return url;
   }, [currentPage, sortOption, itemsPerPage]); // Dependencies checked
@@ -98,7 +100,7 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
     isValidating: isValidatingMarketData,
   } = useSWR<CryptoMarketData[]>(swrListKey, listFetcher, {
     refreshInterval: 300000, // Increased interval
-    // keepPreviousData: false, // Keep disabled for debugging
+    // keepPreviousData: false, // Keep disabled for debugging sorting/paging
     fallbackData:
       currentPage === 1 &&
       sortOption === "market_cap_desc" &&
@@ -107,18 +109,10 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
         : undefined,
     // shouldRetryOnError: false, // Optional: disable retry for debugging
   });
-  // Log SWR list state updates
-  useEffect(() => {
-    console.log(
-      `[Wrapper] SWR List State Update: Key=${swrListKey}, isLoading=${isLoadingMarketData}, isValidating=${isValidatingMarketData}, dataLen=${marketData?.length}, error=${marketError}`
-    );
-  }, [
-    swrListKey,
-    isLoadingMarketData,
-    isValidatingMarketData,
-    marketData,
-    marketError,
-  ]);
+  // Log SWR list state updates (optional debug)
+  // useEffect(() => {
+  //      console.log(`[Wrapper] SWR List State Update: Key=${swrListKey}, isLoading=${isLoadingMarketData}, isValidating=${isValidatingMarketData}, dataLen=${marketData?.length}, error=${marketError}`);
+  // }, [swrListKey, isLoadingMarketData, isValidatingMarketData, marketData, marketError]);
 
   const {
     data: globalData,
@@ -133,19 +127,22 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
 
   // --- Data Handling & Filtering (Memoized) ---
   const currentData = marketData ?? initialData ?? []; // Default to empty array
+  // Explicitly typed useMemo hook for filtered data
   const filteredData = useMemo((): CryptoMarketData[] => {
     if (!debouncedSearchTerm) {
-      return currentData;
+      return currentData; // Return current dataset if no search term
     }
+    // Filter based on search term
     return currentData.filter(
       (coin) =>
         coin.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
         coin.symbol.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
     );
-  }, [currentData, debouncedSearchTerm]);
+  }, [currentData, debouncedSearchTerm]); // Dependencies: currentData, debouncedSearchTerm
   // --- End Data Handling & Filtering ---
 
   // --- Loading State Calculation ---
+  // Show loading if SWR is fetching and we don't have fallback/previous data for the current view
   const displayLoadingTable =
     isLoadingMarketData && !marketData && !initialData?.length;
   // console.log(`[Wrapper] displayLoadingTable=${displayLoadingTable}`);
@@ -176,6 +173,8 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
   const handlePageChange = useCallback((page: number) => {
     console.log("[Wrapper] handlePageChange:", page); // Important log
     setCurrentPage(page);
+    // Optional: Scroll to top
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
   // --- End Event Handlers ---
 
@@ -213,7 +212,7 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
 
       {/* Crypto Table */}
       <CryptoTable
-        data={filteredData}
+        data={filteredData} // Use the memoized filtered data
         isLoading={displayLoadingTable} // Use calculated loading state
         itemsPerPage={itemsPerPage}
       />
@@ -228,12 +227,12 @@ const ClientDashboardWrapper: React.FC<ClientDashboardWrapperProps> = ({
         />
       )}
 
-      {/* No Search Results Message */}
+      {/* No Search Results Message - Escaped Quotes */}
       {!displayLoadingTable &&
         debouncedSearchTerm &&
         filteredData?.length === 0 && (
           <div className="text-center text-muted-foreground my-6">
-            No results found for "{debouncedSearchTerm}".
+            No results found for &quot;{debouncedSearchTerm}&quot;.
           </div>
         )}
     </div>

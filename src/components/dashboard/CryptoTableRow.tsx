@@ -1,29 +1,24 @@
-// src/components/dashboard/CryptoTableRow.tsx (Sparkline Removed)
+// src/components/dashboard/CryptoTableRow.tsx (Removed Unused Imports / Sparkline Logic)
 // --- Start of File ---
 "use client";
 
 import React from "react";
 import Image from "next/image";
 import { motion, Variants } from "framer-motion";
-import type { CryptoMarketData } from "@/types/crypto"; // Still use this type
+import type { CryptoMarketData } from "@/types/crypto";
 import {
   formatCurrency,
   formatPercentage,
   formatCompactCurrency,
 } from "@/lib/utils";
-import {
-  FaArrowTrendUp,
-  FaArrowTrendDown,
-  FaCircleQuestion,
-} from "react-icons/fa6";
-// Removed PriceChart import as it's no longer used here
+// FaArrowTrendUp/Down removed
+import { FaCircleQuestion } from "react-icons/fa6";
 
 interface CryptoTableRowProps {
   coin: CryptoMarketData;
   index: number;
 }
 
-// Animation variants remain the same
 const rowVariants: Variants = {
   hidden: { opacity: 0, y: 15 },
   visible: (i: number) => ({
@@ -55,7 +50,7 @@ const CryptoTableRow: React.FC<CryptoTableRowProps> = ({ coin, index }) => {
   const isValidImageUrl =
     typeof coin.image === "string" && coin.image.startsWith("http");
 
-  // No longer need is7dPositive for sparkline
+  // is7dPositive removed
 
   return (
     <motion.tr
@@ -70,11 +65,9 @@ const CryptoTableRow: React.FC<CryptoTableRowProps> = ({ coin, index }) => {
       <td className="px-2 py-3 text-center text-xs tabular-nums text-muted-foreground">
         {coin.market_cap_rank ?? "-"}
       </td>
-
       {/* Name & Symbol */}
       <td className="px-3 py-3">
         <div className="flex items-center space-x-2.5">
-          {/* Image/Placeholder */}
           <div className="flex-shrink-0 h-6 w-6">
             {isValidImageUrl ? (
               <Image
@@ -95,7 +88,6 @@ const CryptoTableRow: React.FC<CryptoTableRowProps> = ({ coin, index }) => {
               </div>
             )}
           </div>
-          {/* Text */}
           <div className="flex flex-col items-start">
             <span className="font-medium text-sm text-foreground whitespace-nowrap">
               {coin.name}
@@ -106,44 +98,37 @@ const CryptoTableRow: React.FC<CryptoTableRowProps> = ({ coin, index }) => {
           </div>
         </div>
       </td>
-
       {/* Price */}
       <td className="px-3 py-3 text-right font-medium text-sm tabular-nums">
         {formatCurrency(coin.current_price)}
       </td>
-
-      {/* 1h % Change */}
+      {/* 1h % */}
       <td
         className={`px-3 py-3 text-right text-sm font-medium hidden lg:table-cell tabular-nums ${changeColor1h}`}
       >
         {formatPercentage(priceChange1h)}
       </td>
-
-      {/* 24h % Change */}
+      {/* 24h % */}
       <td
         className={`px-3 py-3 text-right text-sm font-medium tabular-nums ${changeColor24h}`}
       >
         {formatPercentage(priceChange24h)}
       </td>
-
-      {/* 7d % Change */}
+      {/* 7d % */}
       <td
         className={`px-3 py-3 text-right text-sm font-medium hidden lg:table-cell tabular-nums ${changeColor7d}`}
       >
         {formatPercentage(priceChange7d)}
       </td>
-
       {/* Market Cap */}
       <td className="px-3 py-3 text-right text-sm text-muted-foreground tabular-nums hidden md:table-cell">
         {formatCompactCurrency(coin.market_cap)}
       </td>
-
-      {/* 24h Volume */}
+      {/* Volume */}
       <td className="px-3 py-3 text-right text-sm text-muted-foreground tabular-nums hidden md:table-cell">
         {formatCompactCurrency(coin.total_volume)}
       </td>
-
-      {/* --- SPARKLINE CELL REMOVED --- */}
+      {/* Sparkline cell removed */}
     </motion.tr>
   );
 };

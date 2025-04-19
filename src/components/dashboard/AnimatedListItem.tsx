@@ -1,54 +1,66 @@
-// src/components/dashboard/AnimatedListItem.tsx
-"use client"; // Uses Framer Motion for client-side animation
+// src/components/dashboard/AnimatedListItem.tsx (Use Framer Motion Props)
+// --- Start of File ---
+"use client";
 
 import React from "react";
-import { motion, Variants } from "framer-motion"; // Import motion and Variants type
-import type { ChildrenProps } from "@/types";
+// Import motion types
+import { motion, Variants, HTMLMotionProps } from "framer-motion";
+// We might not need ChildrenProps from types anymore if ReactNode is handled
 
-interface AnimatedListItemProps extends ChildrenProps {
-  index?: number; // Optional index for staggered animations
-  customVariants?: Variants; // Allow passing custom animation variants
-  className?: string; // Allow passing additional CSS classes
-  // Accept any other props to pass down to the motion element (e.g., layout props)
-  [key: string]: any;
+// Define props based on Framer Motion's props for a 'div', plus our custom ones
+// We omit 'ref' as forwardRef handles it, and add our specific props.
+interface AnimatedListItemProps extends Omit<HTMLMotionProps<"div">, "ref"> {
+  index?: number;
+  customVariants?: Variants;
+  children: React.ReactNode; // Explicitly include children if not directly in HTMLMotionProps or needed separately
+  // className is already part of HTMLMotionProps
 }
 
-// Default animation variants
 const defaultListItemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number = 0) => ({
-    // Accept custom index 'i'
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.03, // Apply a small staggered delay based on index
+      delay: i * 0.03,
       duration: 0.4,
       ease: "easeOut",
     },
   }),
 };
 
-const AnimatedListItem: React.FC<AnimatedListItemProps> = ({
-  children,
-  index = 0, // Default index if not provided
-  customVariants,
-  className = "",
-  ...rest // Pass rest props to motion component
-}) => {
+// Note: No need for React.FC wrapper when defining props this way usually
+const AnimatedListItem = React.forwardRef<
+  HTMLDivElement,
+  AnimatedListItemProps
+>((props, ref) => {
+  // Destructure our custom props and the standard motion props separately
+  const {
+    children,
+    index = 0,
+    customVariants,
+    className, // Destructure className explicitly if needed for defaults/merging
+    ...motionProps // Gather remaining valid motion props
+  } = props;
+
   const variants = customVariants || defaultListItemVariants;
 
   return (
-    <motion.div // Or motion.tr if wrapping a table row directly sometimes needed
+    <motion.div
+      ref={ref} // Forward the ref
       variants={variants}
       initial="hidden"
       animate="visible"
-      custom={index} // Pass index to the 'visible' variant
-      className={className}
-      {...rest} // Spread rest props
+      custom={index}
+      className={className ?? ""} // Handle className, provide default if needed
+      {...motionProps} // Spread the rest of the valid HTMLMotionProps
     >
       {children}
     </motion.div>
   );
-};
+});
+
+AnimatedListItem.displayName = "AnimatedListItem"; // Set display name for DevTools
 
 export default AnimatedListItem;
+// --- End of File ---
