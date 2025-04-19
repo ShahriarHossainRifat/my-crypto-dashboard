@@ -5,23 +5,24 @@ import React from "react";
 // Extend React's HTML attributes for a div element
 export interface SkeletonLoaderProps
   extends React.HTMLAttributes<HTMLDivElement> {}
-// No specific custom props needed for this basic version,
-// but allows standard props like className, style, id etc.
+// Provides className, style, id, etc.
 
+// Use React.FC here is fine, or remove if preferred
 const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   className,
   ...props
 }) => {
   return (
     <div
+      // Use theme variable via Tailwind config
       className={`
         animate-pulse
         rounded-md
-        bg-muted // Use the muted background color from theme
+        bg-muted
         dark:opacity-80
-        ${className} // Allow overriding/extending styles
+        ${className}
       `}
-      {...props} // Spread other standard div attributes
+      {...props} // Spread standard div attributes
     />
   );
 };

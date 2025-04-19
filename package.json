@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d out"
+    "deploy": "node -e \"require('fs').closeSync(require('fs').openSync('out/.nojekyll', 'w'))\" && gh-pages -d out --dotfiles"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.2",
