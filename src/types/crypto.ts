@@ -33,11 +33,7 @@ export interface CryptoMarketData {
   price_change_percentage_1h_in_currency?: number | null;
   price_change_percentage_7d_in_currency?: number | null;
 
-  // --- ADDED FIELD for Sparklines ---
-  sparkline_in_7d?: {
-    price: number[]; // Array of price points for the last 7 days
-  };
-  // --- END OF ADDED FIELD ---
+  // --- SPARKLINE FIELD REMOVED ---
 }
 
 export interface RoiData {
