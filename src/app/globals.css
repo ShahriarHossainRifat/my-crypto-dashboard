@@ -1,26 +1,77 @@
-@import "tailwindcss";
+/* src/app/globals.css */
+@import "tailwindcss"; /* Import Tailwind v4 */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* Define base CSS variables for theming */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-primary-light: #6366f1; /* Indigo 500 */
+    --color-primary-default: #4f46e5; /* Indigo 600 */
+    --color-primary-dark: #4338ca;  /* Indigo 700 */
+    --color-secondary: #db2777;   /* Pink 600 */
+
+    --background: 240 10% 3.9%; /* Example for dark mode background */
+    --foreground: 0 0% 98%; /* Example for dark mode foreground */
+
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+
+    /* Define other variables: borders, inputs, rings etc. */
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --radius: 0.5rem; /* Example border radius variable */
+  }
+
+  /* Define variables for light mode */
+  /* Using a class applied by next-themes */
+  .light {
+    --color-primary-light: #4f46e5;
+    --color-primary-default: #4338ca;
+    --color-primary-dark: #3730a3;
+    --color-secondary: #db2777;
+
+    --background: 0 0% 100%; /* Example for light mode background */
+    --foreground: 240 10% 3.9%; /* Example for light mode foreground */
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+  }
+
+   /* Apply base body styles using CSS variables */
+  body {
+      /* Tailwind v4 applies background/color automatically based on light/dark */
+      /* but you can override or add transitions here */
+      @apply transition-colors duration-300 antialiased;
+        background-color: var(--background);
+        color: var(--foreground);
+  }
+
+  /* Optional: Custom scrollbar */
+   ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--border); /* Use a theme variable */
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+     background-color: var(--ring); /* Use a theme variable */
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Define custom component styles if needed */
+@layer components {
+   .btn-primary {
+    /* Use the CSS variables directly */
+   @apply px-4 py-2 bg-[var(--color-primary-default)] hover:bg-[var(--color-primary-dark)] text-white font-semibold rounded-md shadow transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--background)] focus:ring-[var(--color-primary-light)]; /* <-- Updated this line */
+ }
 }
